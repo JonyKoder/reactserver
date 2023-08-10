@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace reactserver.Domain.Models
 {
@@ -27,6 +28,7 @@ namespace reactserver.Domain.Models
         public string FullName { get; set; }
         public string INN { get; set; }
         public string OGRN { get; set; }
+            
         [JsonProperty("dateRegistration")]
         public string DateRegistration { get; set; }
     }
