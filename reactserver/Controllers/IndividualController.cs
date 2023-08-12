@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Mvc;
 using reactserver.database;
 using reactserver.Domain.Models;
 
@@ -17,44 +18,62 @@ namespace reactserver.Controllers
             _appDbContext = appDbContext;
         }
 
-        // GET: api/<IndividualController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<IndividualController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<IndividualController>
         [HttpPost]
-        [Route("Create")]
-        public IActionResult Create([FromBody] IndividualRequest request)
+        [Route("create")]
+        public async Task<IActionResult> AddApplicationForm([FromForm] ApplicationFormDto applicationForm)
         {
             var iP = new IndividualEntrepreneur();
-            iP.OgrnIpImage = request.OgrnIpImage.FileName;
-            iP.EgripImage = request.EgripImage.FileName;
-            iP.ScanInnImage = request.ScanInnImage.FileName;
-            iP.SetDateRegistration(request.DateRegistration);
-            iP.Id = Guid.NewGuid();
-            iP.INN = request.INN;
-            iP.OGRNIP = request.OGRNIP;
+            
+                await AddFilesAsync(applicationForm, iP);
+                iP.AddBankAccount("dsa","dsa","dsa","dsa","dsad", "dsadsa", "dsad");
+                iP.INN = applicationForm.Inn;
+                iP.OGRNIP = applicationForm.Ogrnip;
+                iP.SetDateRegistration(applicationForm.DateRegistration.ToString("dd.MM.yyyy"));
+                await _appDbContext.IndividualEntrepreneurs.AddAsync(iP);
+            
+            await _appDbContext.SaveChangesAsync();
 
-            _appDbContext.IndividualEntrepreneurs.Add(iP);
-            int affectedRows = _appDbContext.SaveChanges();
+            return CreatedAtAction(nameof(AddApplicationForm), applicationForm);
+        }
 
-            if (affectedRows > 0)
+        private async Task AddFilesAsync(ApplicationFormDto applicationForm, IndividualEntrepreneur iP)
+        {
+            var fileInn = applicationForm.ScanInnImage.FileName;
+            var fileOgrnip = applicationForm.OgrnIpImage.FileName;
+            var fileEgrip = applicationForm.EgripImage.FileName;
+            var files = new[]
             {
-                return Ok(new { message = "Компания успешно создана", iP });
-            }
-            else
+                   new { FileName = fileInn, Image = applicationForm.ScanInnImage },
+                   new { FileName = fileOgrnip, Image = applicationForm.OgrnIpImage },
+                   new { FileName = fileEgrip, Image = applicationForm.EgripImage },
+                };
+
+            foreach (var file in files)
             {
-                return BadRequest(new { message = "Ошибка создания компании" });
+                string uploadsFolder = Path.Combine(Path.GetTempPath(), "uploads");
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.Image.CopyToAsync(stream);
+                }
+
+                if (file.Image == applicationForm.ScanInnImage)
+                {
+                    iP.ScanInnImage = filePath;
+                }
+                else if (file.Image == applicationForm.OgrnIpImage)
+                {
+                    iP.OgrnIpImage = filePath;
+                }
+                else if (file.Image == applicationForm.EgripImage)
+                {
+                    iP.EgripImage = filePath;
+                }
             }
         }
 

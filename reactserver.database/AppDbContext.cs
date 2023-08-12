@@ -16,6 +16,6 @@ namespace reactserver.database
         }
         public DbSet<Company> Companies { get; set; }
         public DbSet<IndividualEntrepreneur> IndividualEntrepreneurs { get; set; }
-        public DbSet<KindActivity> KindActivities { get; set; } 
+        public DbSet<BankAccount> BankAccounts { get; set; }
     }
 }

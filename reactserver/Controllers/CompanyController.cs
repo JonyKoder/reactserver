@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using reactserver.database;
 using reactserver.Domain.Models;
 using System.ComponentModel.Design;
@@ -19,17 +20,10 @@ namespace reactserver.Controllers
 
         [HttpGet]
         [Route("GetCompany")]
-        public Company GetCompanyes()
+        public  async Task<List<Company>> GetCompanyes()
         {
-            var company = new Company();
-
-            company.FullName = "Что попало";
-            company.Id = Guid.NewGuid();
-            company.INN = "d222233111";
-            company.OGRN = "12432213242133213";
-
-           
-            return company;
+           var companys = await db.Companies.ToListAsync();
+           return companys;
         }
         [HttpPost]
         [Route("CreateCompany")]
