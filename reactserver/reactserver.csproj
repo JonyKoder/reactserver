@@ -21,6 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\reactserver.Application\reactserver.Application.csproj" />
 	  <ProjectReference Include="..\reactserver.database\reactserver.database.csproj" />
 	  <ProjectReference Include="..\reactserver.Domain\reactserver.Domain.csproj" />
 	</ItemGroup>

@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
+using reactserver.Application.Interfaces;
+using reactserver.Application.Repositoryes;
+using reactserver.Application.Repositoryes.Interfaces;
+using reactserver.Application.Services;
 using reactserver.database;
 
 public class Program
@@ -16,6 +20,8 @@ public class Program
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+        builder.Services.AddTransient<IIndividualRepository, IndividualRepository>();
+        builder.Services.AddTransient<IIndividualService, IndividualService>();
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(

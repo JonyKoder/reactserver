@@ -1,5 +1,7 @@
 ﻿using Humanizer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using reactserver.Application.Interfaces;
 using reactserver.database;
 using reactserver.Domain.Models;
 
@@ -11,71 +13,30 @@ namespace reactserver.Controllers
     [ApiController]
     public class IndividualController : ControllerBase
     {
-        private AppDbContext _appDbContext;
+        private IIndividualService _individualService;
 
-        public IndividualController(AppDbContext appDbContext)
+        public IndividualController(IIndividualService individualService)
         {
-            _appDbContext = appDbContext;
+            _individualService = individualService;
+        }
+
+        private string GenerateImageUrl(string imageName)
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
+            var imagePath = $"{imageName}";
+            return $"{baseUrl}/{imagePath}";
         }
 
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> AddApplicationForm([FromForm] ApplicationFormDto applicationForm)
         {
-            var iP = new IndividualEntrepreneur();
-            
-                await AddFilesAsync(applicationForm, iP);
-                iP.AddBankAccount("dsa","dsa","dsa","dsa","dsad", "dsadsa", "dsad");
-                iP.INN = applicationForm.Inn;
-                iP.OGRNIP = applicationForm.Ogrnip;
-                iP.SetDateRegistration(applicationForm.DateRegistration.ToString("dd.MM.yyyy"));
-                await _appDbContext.IndividualEntrepreneurs.AddAsync(iP);
-            
-            await _appDbContext.SaveChangesAsync();
+            await _individualService.CreateAsync(applicationForm);
 
             return CreatedAtAction(nameof(AddApplicationForm), applicationForm);
         }
 
-        private async Task AddFilesAsync(ApplicationFormDto applicationForm, IndividualEntrepreneur iP)
-        {
-            var fileInn = applicationForm.ScanInnImage.FileName;
-            var fileOgrnip = applicationForm.OgrnIpImage.FileName;
-            var fileEgrip = applicationForm.EgripImage.FileName;
-            var files = new[]
-            {
-                   new { FileName = fileInn, Image = applicationForm.ScanInnImage },
-                   new { FileName = fileOgrnip, Image = applicationForm.OgrnIpImage },
-                   new { FileName = fileEgrip, Image = applicationForm.EgripImage },
-                };
-
-            foreach (var file in files)
-            {
-                string uploadsFolder = Path.Combine(Path.GetTempPath(), "uploads");
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.Image.CopyToAsync(stream);
-                }
-
-                if (file.Image == applicationForm.ScanInnImage)
-                {
-                    iP.ScanInnImage = filePath;
-                }
-                else if (file.Image == applicationForm.OgrnIpImage)
-                {
-                    iP.OgrnIpImage = filePath;
-                }
-                else if (file.Image == applicationForm.EgripImage)
-                {
-                    iP.EgripImage = filePath;
-                }
-            }
-        }
+       
 
         // PUT api/<IndividualController>/5
         [HttpPut("{id}")]
