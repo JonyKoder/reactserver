@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using reactserver.Application.Interfaces;
 using reactserver.database;
 using reactserver.Domain.Models;
 using System.ComponentModel.Design;
@@ -11,42 +12,20 @@ namespace reactserver.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private AppDbContext db;
+        private readonly ICompanyService _companyService;
 
-        public CompanyController(AppDbContext db)
+        public CompanyController(ICompanyService companyService)
         {
-            this.db = db;
+            _companyService = companyService;
         }
 
-        [HttpGet]
-        [Route("GetCompany")]
-        public  async Task<List<Company>> GetCompanyes()
-        {
-           var companys = await db.Companies.ToListAsync();
-           return companys;
-        }
         [HttpPost]
         [Route("CreateCompany")]
-        public IActionResult CreateCompany([FromBody] CompanyRequest request)
+        public async Task<IActionResult> CreateCompany([FromForm] CompanyDto request)
         {
-            var company = new Company();
+            await _companyService.CreateAsync(request);
 
-            company.SetDateRegistration(request.DateRegistration);
-            company.FullName = request.FullName;
-            company.Id = Guid.NewGuid();
-            company.INN = request.INN;
-            company.OGRN = request.OGRN;
-            db.Companies.Add(company);
-            int affectedRows = db.SaveChanges();
-
-            if (affectedRows > 0)
-            {
-                return Ok(new { message = "Компания успешно создана", company });
-            }
-            else
-            {
-                return BadRequest(new { message = "Ошибка создания компании" });
-            }
+            return Ok();
         }
     }
 }

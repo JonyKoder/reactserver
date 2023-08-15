@@ -9,29 +9,37 @@ using System.Threading.Tasks;
 
 namespace reactserver.Application.Services
 {
-    public class IndividualService : IIndividualService
+    public class CompanyService : ICompanyService
     {
-        private readonly IIndividualRepository _individualRepository;
+        private readonly ICompanyRepository _companyRepository;
 
-        public IndividualService(IIndividualRepository individualRepository)
+        public CompanyService(ICompanyRepository companyRepository)
         {
-            _individualRepository = individualRepository;
+            _companyRepository = companyRepository;
         }
 
-        public async Task<bool> CreateAsync(ApplicationFormDto dto)
+        public async Task<bool> CreateAsync(CompanyDto dto)
         {
-            var iP = new IndividualEntrepreneur();
+            var company = new Company()
+            {
+                Bic = dto.Bic,
+                BranchName = dto.BranchName,
+                CheckingAccount = dto.CheckingAccount,
+                CorrespondentAccount = dto.CorrespondentAccount,
+                DateRegistration = dto.DateRegistration,
+                FullName = dto.FullName,
+                INN = dto.INN,
+                OGRN = dto.OGRN,
+                ShortName = dto.ShortName,
+                Id = Guid.NewGuid(),
 
-            await AddFilesAsync(dto, iP);
-            iP.AddBankAccount(dto.Bic, dto.BranchName, dto.CheckingAccount, dto.CorrespondentAccount);
-            iP.INN = dto.Inn;
-            iP.OGRNIP = dto.Ogrnip;
-            iP.SetDateRegistration(dto.DateRegistration.ToString("dd.MM.yyyy"));
-            await _individualRepository.CreateAsync(iP);
+            };
+            await AddFilesAsync(dto, company);
+            company.AddBankAccount(dto.Bic, dto.BranchName, dto.CheckingAccount, dto.CorrespondentAccount);
+            await _companyRepository.CreateAsync(company);
             return true;
-
         }
-        private async Task AddFilesAsync(ApplicationFormDto applicationForm, IndividualEntrepreneur iP)
+        private async Task AddFilesAsync(CompanyDto applicationForm, Company company)
         {
             var fileInn = applicationForm.ScanInnImage.FileName;
             var fileOgrnip = applicationForm.OgrnIpImage.FileName;
@@ -59,15 +67,15 @@ namespace reactserver.Application.Services
 
                 if (file.Image == applicationForm.ScanInnImage)
                 {
-                    iP.ScanInnImage = filePath;
+                    company.ScanInnImage = filePath;
                 }
                 else if (file.Image == applicationForm.OgrnIpImage)
                 {
-                    iP.OgrnIpImage = filePath;
+                    company.OgrnIpImage = filePath;
                 }
                 else if (file.Image == applicationForm.EgripImage)
                 {
-                    iP.EgripImage = filePath;
+                    company.EgripImage = filePath;
                 }
             }
         }

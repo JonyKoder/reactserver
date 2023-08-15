@@ -15,18 +15,15 @@ namespace reactserver.Domain.Models
         public Guid BankAccountId { get; set; }
         public BankAccount BankAccount { get; set; }
 
-        public void AddBankAccount(string accountNumber, string bankCode, string bankName, string bankAddress, string swiftCode, string iban, string accountHolderName)
+        public void AddBankAccount(string bic, string branch, string checkingAccount, string correspondetAccount)
         {
             BankAccount = new BankAccount
             {
                 Id = Guid.NewGuid(),
-                AccountNumber = accountNumber,
-                BankCode = bankCode,
-                BankName = bankName,
-                BankAddress = bankAddress,
-                SWIFTCode = swiftCode,
-                IBAN = iban,
-                AccountHolderName = accountHolderName
+                Bic = bic,
+                BranchName = branch,
+                CheckingAccount = checkingAccount,
+                CorrespondentAccount = correspondetAccount
             };
 
             BankAccountId = BankAccount.Id;
@@ -54,12 +51,10 @@ namespace reactserver.Domain.Models
         public IFormFile ScanInnImage { get; set; }
         public IFormFile OgrnIpImage { get; set; }
         public IFormFile EgripImage { get; set; }
-    }
-    public class BankAccountDto
-    {
-        public Guid Id { get; set; }
-        public string BankName { get; set; }
-        public string AccountNumber { get; set; }
         public string Bic { get; set; }
+        public string BranchName { get; set; }
+        public string CheckingAccount { get; set; }
+        public string CorrespondentAccount { get; set; }
     }
+
 }

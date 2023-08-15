@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using reactserver.Application.Interfaces;
 using reactserver.database;
 using reactserver.Domain.Models;
+using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,10 +15,11 @@ namespace reactserver.Controllers
     public class IndividualController : ControllerBase
     {
         private IIndividualService _individualService;
-
-        public IndividualController(IIndividualService individualService)
+        private readonly AppDbContext dbContext;
+        public IndividualController(IIndividualService individualService, AppDbContext dbContext)
         {
             _individualService = individualService;
+            this.dbContext = dbContext;
         }
 
         private string GenerateImageUrl(string imageName)
@@ -36,7 +38,6 @@ namespace reactserver.Controllers
             return CreatedAtAction(nameof(AddApplicationForm), applicationForm);
         }
 
-       
 
         // PUT api/<IndividualController>/5
         [HttpPut("{id}")]

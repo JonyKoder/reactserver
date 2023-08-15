@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Npgsql;
 using reactserver.Application.Interfaces;
 using reactserver.Application.Repositoryes;
 using reactserver.Application.Repositoryes.Interfaces;
 using reactserver.Application.Services;
 using reactserver.database;
+using reactserver.Domain.Models;
 
 public class Program
 {
@@ -17,11 +20,13 @@ public class Program
         //{
         //    configuration.RootPath = "clientapp/build";
         //});
-
+        //AddPeopleMigration(builder);
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
         builder.Services.AddTransient<IIndividualRepository, IndividualRepository>();
         builder.Services.AddTransient<IIndividualService, IndividualService>();
+        builder.Services.AddTransient<ICompanyRepository, CompanyRepository>();
+        builder.Services.AddTransient<ICompanyService, CompanyService>();
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(
@@ -61,10 +66,11 @@ public class Program
         app.MapControllers();
 
         app.UseCors();
-      
-        app.Run();
 
+        app.Run();
     }
+
+  
 }
 
 

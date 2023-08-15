@@ -26,4 +26,8 @@
 	  <ProjectReference Include="..\reactserver.Domain\reactserver.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="uploads\" />
+	</ItemGroup>
+
 </Project>

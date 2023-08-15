@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using reactserver.database;
@@ -11,9 +12,11 @@ using reactserver.database;
 namespace reactserver.database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230814183102_AddPeoples")]
+    partial class AddPeoples
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,31 +58,8 @@ namespace reactserver.database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("BankAccountId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Bic")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("BranchName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CheckingAccount")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CorrespondentAccount")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("DateRegistration")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EgripImage")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -93,21 +73,7 @@ namespace reactserver.database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("OgrnIpImage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ScanInnImage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ShortName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("BankAccountId");
 
                     b.ToTable("Companies");
                 });
@@ -151,15 +117,40 @@ namespace reactserver.database.Migrations
                     b.ToTable("IndividualEntrepreneurs");
                 });
 
-            modelBuilder.Entity("reactserver.Domain.Models.Company", b =>
+            modelBuilder.Entity("reactserver.Domain.Models.people", b =>
                 {
-                    b.HasOne("reactserver.Domain.Models.BankAccount", "BankAccount")
-                        .WithMany()
-                        .HasForeignKey("BankAccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Navigation("BankAccount");
+                    b.Property<DateTime>("birth_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("doc_ser_num")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("first_name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("inn")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("last_name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("second_name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("spdul_code")
+                        .HasColumnType("integer");
+
+                    b.HasKey("id");
+
+                    b.ToTable("peoples");
                 });
 
             modelBuilder.Entity("reactserver.Domain.Models.IndividualEntrepreneur", b =>
